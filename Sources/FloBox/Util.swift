@@ -98,6 +98,10 @@ public class __thread__{
     private var pthread: pthread_t
     #endif
     // old priorities: CLOCK = 99, SEND = 75, LISTEN = 50
+    /*
+     The @escaping closure, c (passed to the initialiser), can contain any code, which
+     will be executed once only, within a unique POSIX thread, immediately upon instantiation.
+     */
     public init(_ priority:UInt8,_ c: @escaping ()->()){
         let h = Unmanaged.passRetained(__thread__.Closure(c))
         let p = UnsafeMutableRawPointer(h.toOpaque())
@@ -144,7 +148,10 @@ public class __clock__{
     
     private let _interval:Int64 // in micro seconds = 0.000,001
     private let _callback: ()->()
-    
+    /*
+    Similar to a `__thread__` (above), except that clocks execute the @escaping closure, c, at regular
+    periodic intervals. Clocks can be started, paused and resumed as needed (by toggling the running variable).
+    */
     public convenience init(ms:UInt64,_ cb: @escaping ()->()){ self.init(µs:ms*1000,cb) }
     public init(µs:UInt64,_ cb: @escaping ()->()){ // in micro seconds = 0.000,001
         _interval = Int64(µs) * 1000

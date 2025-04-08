@@ -23,7 +23,6 @@
  SOFTWARE.
  */
 import Foundation
-//  scp Primitives.swift dasher@10.99.1.223:Swift/FloBox/Sources/FloBox/Events
 
 let _UNKNOWN_ID_ = UInt8(0)
 let _BOOL_ID_ = UInt8(1)

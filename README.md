@@ -1,4 +1,4 @@
-**FLO - Distributed Hierarchical Dataflow**
+**[FLO - Distributed Hierarchical Dataflow](https://github.com/kk-0129/Flo)**
 
 Swift package:
 # FloBox
@@ -6,12 +6,10 @@ Swift package:
 The FloBox package contains the most common, low-level data structures and
 utilities of the Flo software stack.
 
-The package can be divided into 3 functional groups:
+The package is divided into 3 functional groups (described in the sections below):
 * [Low-Level Logging, Serialisation, Threads and Timing](#logging)
 * [Basic Data-Type and Box Definitions](#basics)
 * [Remote Device Servers](#devices)
-
-These groups are described in the 3 subsections below.
 
 <h2 id="logging"> Low-Level Logging, Serialisation, Threads and Timing</h2>
 

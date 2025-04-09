@@ -22,21 +22,19 @@ Logging functions throughout the Flo stack are implemented with the Logger proto
 
 ### 1.2) Data Serialisation
 
-Data serialisation throughout the Flo stack relies on the `IO` protocol (in `IO.swift`), which just defines methods to write and read bytes to/from a byte sequence (`[UInt8]`). Serialisable structs and classes then implement the associated `IO™` protocol (also in `IO.swift`) to serialise themselves to/from an IO byte stream. Note that the `static` deserialisation method does not throw any errors, with the supplied `IO` argument assumed to be always contain well-formed data. This may change in future versions.
+Data serialisation throughout the Flo stack relies on the `IO` protocol (in [IO.swift](Sources/FloBox/IO.swift)), which just defines methods to write and read bytes to/from a byte sequence (`[UInt8]`). Serialisable structs and classes then implement the associated `IO™` protocol (also in [IO.swift](Sources/FloBox/IO.swift)) to serialise themselves to/from an IO byte stream. Note that the `static` deserialisation method does not throw any errors, with the supplied `IO` argument assumed to be always contain well-formed data. This may change in future versions.
 
 ### 1.3) Threads
 
-The `__thread__` class (in `Util.swift`), is a convenient wrapper for a low-level POSIX 3 thread. Swift Foundation GCD threading classes are also used throughout the application stack, the `__thread__` class oﬀers more scheduling predictability and is used for time-critical operations.
+The `__thread__` class (in [Util.swift](Sources/FloBox/Util.swift)), is a convenience wrapper for a low-level POSIX 3 thread. Swift Foundation GCD threading classes are also used throughout the application stack, the `__thread__` class oﬀers more scheduling predictability and is used for time-critical operations.
 
 ### 1.4) Clock
 
-The `__clock__` class (in `Util.swift`), is similar to a `__thread__` (above), except that it 
-executes its @escaping closure, c, at regular periodic intervals. Clocks can be started, paused
-and resumed as needed (by toggling the `running` variable).
+The `__clock__` class (in [Util.swift](Sources/FloBox/Util.swift)), is similar to a `__thread__` (above), except that it executes its @escaping closure, c, at regular periodic intervals. Clocks can be started, paused and resumed as needed (by toggling the `running` variable).
 
 ### 1.5) Times
 
-The `Time` enum (in `Util.swift`) provides access to the current time in diﬀerent forms (seconds, nano-seconds or a timespec combination). It also defines the type-aliases `Interval` (for an interval of time) and `Stamp` (for an instant in time) just to provide some semantic clarity throughout the code.
+The `Time` enum (in [Util.swift](Sources/FloBox/Util.swift)) provides access to the current time in diﬀerent forms (seconds, nano-seconds or a timespec combination). It also defines the type-aliases `Interval` (for an interval of time) and `Stamp` (for an instant in time) just to provide some semantic clarity throughout the code.
 
 <h2 id="basics">2) Basic Data-Type and Box Definitions</h2>
 
@@ -53,9 +51,7 @@ Flo supports 6 data types:
 * `ARRAY`: an array of a specific primitive (BOOL, FLOAT or STRING) or STRUCT type
 * `STRUCT`: a user-specified (key-value) dictionary of named types.
 
-These data types are defined as cases in an `enum` called `T` (in `Events`/`T.swift`, where "T" stands for "type", but abbreviated to avoid any confusion with the built-in Swift type `Type`). Instances of `BOOL`, `DATA`, `FLOAT`, `STRING` and `ARRAY` are respectively instances of the corresponding Swift
-language types `Bool`, `Data`, `Float`, `String` and `Array`. A `STRUCT` instance, however, must be
-an instance of the FLo-defined struct `Struct` (in  `Events`/`Struct.swift`) - which can be constructed by supplying the name of the `STRUCT` type together with values for all its data members, e.g. 
+These data types are defined as distinct cases in an `enum` called `T` (in [Events/T.swift](Sources/FloBox/Events/T.swift), where "T" stands for "type", but abbreviated to avoid any confusion with the built-in Swift type `Type`). Instances of `BOOL`, `DATA`, `FLOAT`, `STRING` and `ARRAY` are respectively instances of the corresponding Swift language types `Bool`, `Data`, `Float`, `String` and `Array`. A `STRUCT` instance, however, must be an instance of the FLo-defined struct `Struct` (in [Events/Struct.swift](Sources/FloBox/Events/Struct.swift)) - which can be constructed by supplying the name of the `STRUCT` type together with values for all its data members, e.g. 
 
     let s = Struct("XY",["x":2.3,"y":4.5])
 .. will create the following STRUCT instance:
@@ -95,7 +91,14 @@ All `STRUCT` types are automatically (on construction) added to a global registr
 ### 2.2) Events
 The preceding section described the types of data that can be sent along dataflow arcs. For a
 couple of reasons (explained below), this data is not sent 'raw', but is instead wrapped inside a
-struct called an `Event` (defined in [Events/Event.swift](Sources/FloBox/Events/Event.swift))
+struct called an `Event` (defined in [Events/Event.swift](Sources/FloBox/Events/Event.swift)).
+The data in the `Event` is encapsulated as an instance of the `Event.Value` protocol (also defined in [Events/Event.swift](Sources/FloBox/Events/Event.swift)), which is implemented by each of the 6 data types described in the previous section.
+
+One reason for wrapping data in an `Event` is that, although box outputs typically send data
+over arcs, they might also stop sending data (for any number of reasons). Any interruption to the
+data flow is a significant occurrence, which is modelled as an `Event` with a `nil`-valued `Event.Value`. Another reason is to allow users to attach arbitrary `metadata` (represented by an application-
+specific `Struct`) to the data - which can then be used to constrain/filter data
+transmission, according to application specific logic (described below).
 
 ### 2.3) Ports and Box Skins
 TODO

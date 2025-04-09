@@ -27,13 +27,30 @@ import Foundation
 // MARK: T
 public indirect enum T:IO™,Hashable,Equatable{
     
+    /*
+     Note that:
+     * The enum also defines a 7th `UNKNOWN` type which is for internal use only , and will generate
+     fatal errors if used as a normal data type.
+     * `BOOL`, `FLOAT` and `STRING` can take default values, the purpose of which is explained in
+     Section 2.1.b below.
+     * The ARRAY type recursively takes a `T` valued argument defining the type of array elements.
+     But note that ONLY `BOOL`, `FLOAT` or `STRING` or `STRUCT` are valid values for this argument,
+     such that Flo does not support arrays of arrays.
+     * The Struct type has 2 arguments giving its name (a String), and the names and types of
+     its data members (a [String:T]).
+     */
+    
+    /*
+     UNKNOWN is for internal use only and will generate
+     fatal errors if used as a normal data type.
+     */
     case UNKNOWN
-    case BOOL(Bool?=nil)
+    case BOOL(Bool?=nil) // can accpet a default value
     case DATA
-    case FLOAT(Float32?=nil)
-    case STRING(String?=nil)
-    case ARRAY(T)
-    case STRUCT(String,[String:T])
+    case FLOAT(Float32?=nil) // can accpet a default value
+    case STRING(String?=nil) // can accpet a default value
+    case ARRAY(T) // T is the type of the array elements, one of: BOOL, FLOAT, STRING or STRUCT
+    case STRUCT(String,[String:T]) // name and key/value types
     
     public var dv:(any Event.Value)?{
         switch self{ // default value => param

@@ -95,7 +95,7 @@ All `STRUCT` types are automatically (on construction) added to a global registr
 ### 2.2) Events
 The preceding section described the types of data that can be sent along dataflow arcs. For a
 couple of reasons (explained below), this data is not sent 'raw', but is instead wrapped inside a
-struct called an `Event` (defined in [Events/Event.swift](Events/Event.swift))
+struct called an `Event` (defined in [Events/Event.swift](Sources/FloBox/Events/Event.swift))
 
 ### 2.3) Ports and Box Skins
 TODO
